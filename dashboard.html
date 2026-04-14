@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>The Academic Atelier | Paper Automation System</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Manrope:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "outline-variant": "#d6c3af",
+                    "background": "#f7f9ff",
+                    "on-secondary-fixed": "#1a1b1e",
+                    "secondary-fixed": "#e3e2e6",
+                    "primary-fixed": "#ffddb5",
+                    "secondary-fixed-dim": "#c7c6ca",
+                    "on-tertiary-fixed": "#001e2b",
+                    "surface": "#f7f9ff",
+                    "outline": "#847563",
+                    "on-surface": "#181c20",
+                    "on-primary-container": "#6c4500",
+                    "error": "#ba1a1a",
+                    "secondary": "#5e5e62",
+                    "error-container": "#ffdad6",
+                    "surface-dim": "#d7dae0",
+                    "tertiary-container": "#5acbff",
+                    "on-background": "#181c20",
+                    "inverse-on-surface": "#eef1f7",
+                    "on-secondary": "#ffffff",
+                    "on-primary-fixed": "#2a1800",
+                    "on-error-container": "#93000a",
+                    "on-tertiary": "#ffffff",
+                    "tertiary": "#006688",
+                    "surface-container-highest": "#dfe3e8",
+                    "on-surface-variant": "#514535",
+                    "primary-container": "#fbb040",
+                    "inverse-surface": "#2d3135",
+                    "primary-fixed-dim": "#ffb956",
+                    "tertiary-fixed": "#c2e8ff",
+                    "secondary-container": "#e3e2e6",
+                    "on-tertiary-fixed-variant": "#004d67",
+                    "surface-container-low": "#f1f4fa",
+                    "on-secondary-fixed-variant": "#46474a",
+                    "on-secondary-container": "#646468",
+                    "on-tertiary-container": "#005471",
+                    "tertiary-fixed-dim": "#75d1ff",
+                    "on-primary-fixed-variant": "#633f00",
+                    "surface-container-lowest": "#ffffff",
+                    "on-error": "#ffffff",
+                    "surface-bright": "#f7f9ff",
+                    "on-primary": "#ffffff",
+                    "inverse-primary": "#ffb956",
+                    "surface-variant": "#dfe3e8",
+                    "surface-tint": "#835400",
+                    "primary": "#835400",
+                    "surface-container-high": "#e5e8ee",
+                    "surface-container": "#ebeef4"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      body { font-family: 'Inter', sans-serif; }
+      h1, h2, h3 { font-family: 'Manrope', sans-serif; }
+      .paper-gradient {
+        background: linear-gradient(135deg, #835400 0%, #fbb040 100%);
+      }
+    </style>
+</head>
+<body class="bg-surface text-on-surface flex flex-col min-h-screen">
+<!-- Main Content Area -->
+<main class="flex-grow">
+<!-- Top App Bar -->
+<header class="fixed top-0 right-0 left-0 z-30 bg-[#f7f9ff]/80 dark:bg-slate-900/80 backdrop-blur-md px-8 py-4 flex justify-between items-center shadow-[0_12px_32px_-4px_rgba(24,28,32,0.06)]">
+<div class="flex items-center gap-6">
+<img alt="Atelier Logo" class="w-20 h-20 rounded-xl object-contain bg-white shadow-md p-2" src="https://lh3.googleusercontent.com/aida/ADBb0ugGDB5vOf1wUXHLGVP6TjAopPlxuKxn5L-SpxNjUgpTmsjSmvRiU71G5CJJZ9voy5TXzP9WPDaqHN81TfpwX35qEDf194k1BxPVWHGpRUhNUjZaPdc1-rXEH3B-cpfeHsJlxV9-PsDFncd1ehwGi6Ngeo0-Dy-edI1HMW0Z2DwiL-Ro6rAp3T90nO3sLCRXRFTIyarL9W-7VBNy8XbO0D5jFODGlkKynlHirrM9O6euslfpQIsOfscheFz9v45esRsFwwJz-TIPkw" style=""/>
+<div class="flex flex-col">
+<h1 class="font-manrope text-2xl font-extrabold tracking-tight text-[#181c20]" style="">Paper Automation System</h1>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<button class="flex items-center gap-2 px-6 py-2.5 bg-error text-white rounded-xl font-bold text-sm shadow-md hover:bg-red-700 transition-colors" style="">
+<span class="material-symbols-outlined" data-icon="bolt" style="">bolt</span>
+                Send Papers Now
+            </button>
+</div>
+</header>
+<!-- Content Canvas -->
+<div class="pt-40 px-10 pb-16 max-w-[1600px] mx-auto">
+<!-- Summary Bento Grid -->
+<section class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-[0_12px_32px_-4px_rgba(24,28,32,0.06)] flex flex-col gap-1 border-l-4 border-primary">
+<span class="text-xs font-bold text-on-surface-variant uppercase tracking-widest" style="">Total Students</span>
+<span class="text-4xl font-manrope font-extrabold text-on-surface" style="">150</span>
+<div class="mt-2 text-[10px] text-tertiary font-semibold flex items-center gap-1" style="">
+<span class="material-symbols-outlined text-sm" data-icon="trending_up" style="">trending_up</span>
+                    +12% from last month
+                </div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-[0_12px_32px_-4px_rgba(24,28,32,0.06)] flex flex-col gap-1 border-l-4 border-emerald-500">
+<span class="text-xs font-bold text-on-surface-variant uppercase tracking-widest" style="">Active</span>
+<span class="text-4xl font-manrope font-extrabold text-on-surface" style="">142</span>
+<div class="mt-2 text-[10px] text-emerald-600 font-semibold flex items-center gap-1" style="">
+<span class="material-symbols-outlined text-sm" data-icon="check_circle" style="">check_circle</span>
+                    Healthy distribution
+                </div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-[0_12px_32px_-4px_rgba(24,28,32,0.06)] flex flex-col gap-1 border-l-4 border-error">
+<span class="text-xs font-bold text-on-surface-variant uppercase tracking-widest" style="">Inactive</span>
+<span class="text-4xl font-manrope font-extrabold text-on-surface" style="">8</span>
+<div class="mt-2 text-[10px] text-error font-semibold flex items-center gap-1" style="">
+<span class="material-symbols-outlined text-sm" data-icon="warning" style="">warning</span>
+                    Requires attention
+                </div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-[0_12px_32px_-4px_rgba(24,28,32,0.06)] flex flex-col gap-1 border-l-4 border-tertiary">
+<span class="text-xs font-bold text-on-surface-variant uppercase tracking-widest" style="">Last Run</span>
+<span class="text-xl font-manrope font-extrabold text-on-surface mt-2 leading-tight" style="">2026-05-10<br/>08:30 AM</span>
+<div class="mt-2 text-[10px] text-tertiary font-semibold flex items-center gap-1" style="">
+<span class="material-symbols-outlined text-sm" data-icon="sync" style="">sync</span>
+                    Successful
+                </div>
+</div>
+</section>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Main Management Area (2/3 width) -->
+<section class="lg:col-span-2 space-y-8">
+<!-- Table Card -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_12px_32px_-4px_rgba(24,28,32,0.06)] overflow-hidden">
+<div class="px-8 py-6 border-b border-surface-container flex justify-between items-center bg-white">
+<h3 class="text-lg font-manrope font-bold text-on-surface" style="">Student Management</h3>
+<div class="flex gap-2">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm" data-icon="search" style="">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-lg text-sm focus:ring-2 focus:ring-primary/20 w-64" placeholder="Search students..." type="text"/>
+</div>
+<button class="p-2 hover:bg-surface-container-low rounded-lg transition-colors" style="">
+<span class="material-symbols-outlined" data-icon="filter_list" style="">filter_list</span>
+</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low text-on-surface-variant text-[10px] font-bold uppercase tracking-widest">
+<th class="px-8 py-4" style="">Name</th>
+<th class="px-4 py-4" style="">Email</th>
+<th class="px-4 py-4 text-center" style="">Grade</th>
+<th class="px-4 py-4 text-center" style="">Next Week</th>
+<th class="px-4 py-4" style="">Last Sent</th>
+<th class="px-4 py-4" style="">Active</th>
+</tr>
+</thead>
+<tbody class="text-sm font-medium">
+<tr class="border-b border-surface-container hover:bg-surface-bright transition-colors">
+<td class="px-8 py-5" style="">Alexander Wright</td>
+<td class="px-4 py-5 text-on-surface-variant" style="">a.wright@academy.edu</td>
+<td class="px-4 py-5 text-center" style=""><span class="bg-secondary-container px-2 py-1 rounded-md text-[10px]" style="">G11</span></td>
+<td class="px-4 py-5 text-center font-bold text-primary" style="">06</td>
+<td class="px-4 py-5 text-on-surface-variant" style="">May 09</td>
+<td class="px-4 py-5" style="">
+<div class="w-10 h-5 bg-emerald-500 rounded-full relative shadow-inner cursor-pointer">
+<div class="absolute right-1 top-1 w-3 h-3 bg-white rounded-full"></div>
+</div>
+</td>
+</tr>
+<tr class="border-b border-surface-container hover:bg-surface-bright transition-colors">
+<td class="px-8 py-5" style="">Elena Rodriguez</td>
+<td class="px-4 py-5 text-on-surface-variant" style="">e.rod@academy.edu</td>
+<td class="px-4 py-5 text-center" style=""><span class="bg-secondary-container px-2 py-1 rounded-md text-[10px]" style="">G12</span></td>
+<td class="px-4 py-5 text-center font-bold text-primary" style="">14</td>
+<td class="px-4 py-5 text-on-surface-variant" style="">May 08</td>
+<td class="px-4 py-5" style="">
+<div class="w-10 h-5 bg-emerald-500 rounded-full relative shadow-inner cursor-pointer">
+<div class="absolute right-1 top-1 w-3 h-3 bg-white rounded-full"></div>
+</div>
+</td>
+</tr>
+<tr class="border-b border-surface-container hover:bg-surface-bright transition-colors">
+<td class="px-8 py-5" style="">Marcus Thorne</td>
+<td class="px-4 py-5 text-on-surface-variant" style="">m.thorne@academy.edu</td>
+<td class="px-4 py-5 text-center" style=""><span class="bg-secondary-container px-2 py-1 rounded-md text-[10px]" style="">G10</span></td>
+<td class="px-4 py-5 text-center font-bold text-primary" style="">02</td>
+<td class="px-4 py-5 text-on-surface-variant" style="">May 03</td>
+<td class="px-4 py-5" style="">
+<div class="w-10 h-5 bg-surface-container-highest rounded-full relative shadow-inner cursor-pointer">
+<div class="absolute left-1 top-1 w-3 h-3 bg-white rounded-full"></div>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-surface-bright transition-colors">
+<td class="px-8 py-5" style="">Sophia Chen</td>
+<td class="px-4 py-5 text-on-surface-variant" style="">s.chen@academy.edu</td>
+<td class="px-4 py-5 text-center" style=""><span class="bg-secondary-container px-2 py-1 rounded-md text-[10px]" style="">G11</span></td>
+<td class="px-4 py-5 text-center font-bold text-primary" style="">21</td>
+<td class="px-4 py-5 text-on-surface-variant" style="">May 10</td>
+<td class="px-4 py-5" style="">
+<div class="w-10 h-5 bg-emerald-500 rounded-full relative shadow-inner cursor-pointer">
+<div class="absolute right-1 top-1 w-3 h-3 bg-white rounded-full"></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="px-8 py-4 bg-surface-container-low flex justify-between items-center text-xs text-on-surface-variant font-medium">
+<span class="" style="">Showing 4 of 150 students</span>
+<div class="flex gap-4">
+<button class="hover:text-primary" style="">Previous</button>
+<button class="text-primary font-bold" style="">1</button>
+<button class="hover:text-primary" style="">2</button>
+<button class="hover:text-primary" style="">3</button>
+<button class="hover:text-primary" style="">Next</button>
+</div>
+</div>
+</div>
+<!-- Recent Logs Panel -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_12px_32px_-4px_rgba(24,28,32,0.06)] p-8">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-lg font-manrope font-bold text-on-surface flex items-center gap-2" style="">
+<span class="material-symbols-outlined text-tertiary" data-icon="terminal" style="">terminal</span>
+                            Automation Activity Logs
+                        </h3>
+<button class="text-xs font-bold text-primary hover:underline uppercase tracking-wider" style="">Export Logs</button>
+</div>
+<div class="space-y-4">
+<div class="flex items-start gap-4 p-3 rounded-lg hover:bg-surface-container-low transition-colors group">
+<div class="w-2 h-2 rounded-full bg-emerald-500 mt-1.5 group-hover:scale-125 transition-transform"></div>
+<div>
+<p class="text-sm font-medium" style="">Sent <span class="font-bold" style="">week05</span> to <span class="text-primary" style="">a.wright@academy.edu</span></p>
+<span class="text-[10px] text-on-surface-variant" style="">Today, 08:30 AM • Success</span>
+</div>
+</div>
+<div class="flex items-start gap-4 p-3 rounded-lg hover:bg-surface-container-low transition-colors group border-l-2 border-transparent">
+<div class="w-2 h-2 rounded-full bg-emerald-500 mt-1.5 group-hover:scale-125 transition-transform"></div>
+<div>
+<p class="text-sm font-medium" style="">Sent <span class="font-bold" style="">week05</span> to <span class="text-primary" style="">e.rod@academy.edu</span></p>
+<span class="text-[10px] text-on-surface-variant" style="">Today, 08:31 AM • Success</span>
+</div>
+</div>
+<div class="flex items-start gap-4 p-3 rounded-lg hover:bg-surface-container-low transition-colors group">
+<div class="w-2 h-2 rounded-full bg-error mt-1.5 group-hover:scale-125 transition-transform"></div>
+<div>
+<p class="text-sm font-medium" style="">Failed to send to <span class="text-primary" style="">m.thorne@academy.edu</span></p>
+<span class="text-[10px] text-error font-bold italic" style="">User Inactive • Skipping automation</span>
+</div>
+</div>
+<div class="flex items-start gap-4 p-3 rounded-lg hover:bg-surface-container-low transition-colors group">
+<div class="w-2 h-2 rounded-full bg-emerald-500 mt-1.5 group-hover:scale-125 transition-transform"></div>
+<div>
+<p class="text-sm font-medium" style="">Sent <span class="font-bold" style="">week21</span> to <span class="text-primary" style="">s.chen@academy.edu</span></p>
+<span class="text-[10px] text-on-surface-variant" style="">Today, 08:35 AM • Success</span>
+</div>
+</div>
+<div class="flex items-start gap-4 p-3 rounded-lg hover:bg-surface-container-low transition-colors group">
+<div class="w-2 h-2 rounded-full bg-tertiary mt-1.5 group-hover:scale-125 transition-transform"></div>
+<div>
+<p class="text-sm font-medium" style="">System Maintenance: Database indexing completed</p>
+<span class="text-[10px] text-on-surface-variant" style="">Today, 04:00 AM • Routine</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Sidebar Forms (1/3 width) -->
+<section class="space-y-8">
+<!-- Add Student Panel -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_12px_32px_-4px_rgba(24,28,32,0.06)] p-8">
+<h3 class="text-lg font-manrope font-bold text-on-surface mb-6" style="">Enroll New Student</h3>
+<form class="space-y-5">
+<div class="space-y-2">
+<label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest" style="">Full Name</label>
+<input class="w-full bg-surface-container-low border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary/20" placeholder="e.g. Julian Casablancas" type="text"/>
+</div>
+<div class="space-y-2">
+<label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest" style="">School Email</label>
+<input class="w-full bg-surface-container-low border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary/20" placeholder="j.casa@academy.edu" type="email"/>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="space-y-2">
+<label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest" style="">Grade</label>
+<select class="w-full bg-surface-container-low border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary/20">
+<option>Grade 9</option>
+<option>Grade 10</option>
+<option>Grade 11</option>
+<option>Grade 12</option>
+</select>
+</div>
+<div class="space-y-2">
+<label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest" style="">Next Paper</label>
+<input class="w-full bg-surface-container-low border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary/20" placeholder="01" type="number"/>
+</div>
+</div>
+<button class="w-full paper-gradient text-white py-4 rounded-xl font-bold text-sm shadow-md mt-4 hover:shadow-lg transition-all active:scale-[0.98]" style="" type="submit">
+                            Add Student to System
+                        </button>
+</form>
+</div>
+<!-- Quick Actions / Automation Health -->
+<div class="bg-surface-container-low rounded-xl p-8 border border-white/40">
+<h4 class="font-manrope font-bold text-[#835400] mb-4 flex items-center gap-2" style="">
+<span class="material-symbols-outlined" data-icon="analytics" style="">analytics</span>
+                        Automation Insights
+                    </h4>
+<div class="space-y-6">
+<div class="relative pt-1">
+<div class="flex mb-2 items-center justify-between">
+<div>
+<span class="text-[10px] font-bold inline-block py-1 px-2 uppercase rounded-full text-tertiary bg-tertiary-fixed" style="">
+                                        Weekly Progress
+                                    </span>
+</div>
+<div class="text-right">
+<span class="text-xs font-bold inline-block text-tertiary" style="">
+                                        85%
+                                    </span>
+</div>
+</div>
+<div class="overflow-hidden h-2 mb-4 text-xs flex rounded-full bg-surface-container-highest">
+<div class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-tertiary" style="width:85%"></div>
+</div>
+</div>
+<div class="bg-white/60 p-4 rounded-xl flex items-center gap-4">
+<div class="p-2 bg-primary/10 rounded-lg">
+<span class="material-symbols-outlined text-primary" data-icon="lightbulb" style="">lightbulb</span>
+</div>
+<p class="text-xs text-on-surface-variant leading-relaxed" style="">
+<span class="font-bold block text-on-surface" style="">Did you know?</span>
+                                Automation saves you roughly 4.5 hours of manual grading per week.
+                            </p>
+</div>
+</div>
+</div>
+<!-- Information Card -->
+<div class="rounded-xl overflow-hidden relative group">
+<img alt="Workspace" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmRibc2DkDgcGvLMphP7uYPNGLAOxDSDGqBurEch0bppp0uDY9jZOk-Pz5k79-3qnzNTlqBpqaxth1QOJvMUPGUliFYLKsXHenKmhTxTh4OrMU8IbGKBsRfK8fLKbp3dyESwT8OSibSHKe2AldRMFFFQJIsM5qQXlta7pIgH9k-axBE2JmiUkqvKavcEmilMD22xNTRNW949wopT34cVTsTPAdcsd4D8KXw4W2Ybz0GtMhCVvVKGy1P0kClAUghrmWls73s1zXPEiS" style=""/>
+<div class="absolute inset-0 bg-gradient-to-t from-[#181c20]/90 to-transparent p-6 flex flex-col justify-end">
+<span class="text-[10px] text-white/70 font-bold uppercase tracking-widest mb-1" style="">Upcoming Feature</span>
+<h4 class="text-white font-manrope font-bold text-lg" style="">AI Feedback Assistant</h4>
+<p class="text-white/80 text-xs mt-1" style="">Generate personalized comments for student papers automatically based on performance trends.</p>
+</div>
+</div>
+</section>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest border-t border-surface-container mt-auto">
+<div class="max-w-[1600px] mx-auto px-10 py-8">
+<div class="flex flex-col md:flex-row justify-center items-center">
+<p class="text-sm text-on-surface-variant text-center" style="">
+                    Created with ❤️ by <span class="font-bold text-primary" style="">Tharin Edirisinghe</span> © 2026
+                </p>
+</div>
+</div>
+</footer>
+<!-- Floating Action Button (FAB) -->
+</body></html>
