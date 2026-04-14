@@ -173,7 +173,7 @@ function addStudent(student) {
     student.name,
     student.email,
     student.grade,
-    "yes", // default active
+    "Yes", // default active
     student.nextWeek,
     "" // last sent
   ]);
@@ -181,20 +181,23 @@ function addStudent(student) {
 }
 
 /**
- * Toggle active status of a student.
+ * Update the active status of a student.
  */
-function toggleStudentStatus(email, currentStatus) {
+function updateStudentStatus(email, status) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet = ss.getSheetByName("Students");
-  const data = sheet.getDataRange().getValues();
+  const data = sheet.getRange("B:B").getValues(); // Check email column (B)
   
   for (let i = 1; i < data.length; i++) {
-    if (data[i][1] === email) {
-      const newStatus = currentStatus ? "no" : "yes";
-      sheet.getRange(i + 1, 4).setValue(newStatus);
+    if (data[i][0] === email) {
+      sheet.getRange(i + 1, 4).setValue(status); // Column D
       return true;
     }
   }
   return false;
 }
+
+/**
+ * Toggle active status of a student (Legacy).
+ */
 
