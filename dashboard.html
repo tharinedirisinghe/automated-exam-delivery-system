@@ -99,7 +99,7 @@
 </div>
 </div>
 <div class="flex items-center gap-6">
-<button class="flex items-center gap-2 px-6 py-2.5 bg-error text-white rounded-xl font-bold text-sm shadow-md hover:bg-red-700 transition-colors" style="">
+<button id="send-papers-btn" class="flex items-center gap-2 px-6 py-2.5 bg-error text-white rounded-xl font-bold text-sm shadow-md hover:bg-red-700 transition-colors" style="" onclick="sendPapers()">
 <span class="material-symbols-outlined" data-icon="bolt" style="">bolt</span>
                 Send Papers Now
             </button>
@@ -111,15 +111,15 @@
 <section class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
 <div class="bg-surface-container-lowest p-6 rounded-xl shadow-[0_12px_32px_-4px_rgba(24,28,32,0.06)] flex flex-col gap-1 border-l-4 border-primary">
 <span class="text-xs font-bold text-on-surface-variant uppercase tracking-widest" style="">Total Students</span>
-<span class="text-4xl font-manrope font-extrabold text-on-surface" style="">150</span>
-<div class="mt-2 text-[10px] text-tertiary font-semibold flex items-center gap-1" style="">
-<span class="material-symbols-outlined text-sm" data-icon="trending_up" style="">trending_up</span>
-                    +12% from last month
+<span data-stats="total" class="text-4xl font-manrope font-extrabold text-on-surface" style="">150</span>
+<div class="mt-2 text-[10px] text-primary font-semibold flex items-center gap-1" style="">
+<span class="material-symbols-outlined text-sm" data-icon="group" style="">group</span>
+                    Overall enrollment
                 </div>
 </div>
 <div class="bg-surface-container-lowest p-6 rounded-xl shadow-[0_12px_32px_-4px_rgba(24,28,32,0.06)] flex flex-col gap-1 border-l-4 border-emerald-500">
 <span class="text-xs font-bold text-on-surface-variant uppercase tracking-widest" style="">Active</span>
-<span class="text-4xl font-manrope font-extrabold text-on-surface" style="">142</span>
+<span data-stats="active" class="text-4xl font-manrope font-extrabold text-on-surface" style="">142</span>
 <div class="mt-2 text-[10px] text-emerald-600 font-semibold flex items-center gap-1" style="">
 <span class="material-symbols-outlined text-sm" data-icon="check_circle" style="">check_circle</span>
                     Healthy distribution
@@ -127,7 +127,7 @@
 </div>
 <div class="bg-surface-container-lowest p-6 rounded-xl shadow-[0_12px_32px_-4px_rgba(24,28,32,0.06)] flex flex-col gap-1 border-l-4 border-error">
 <span class="text-xs font-bold text-on-surface-variant uppercase tracking-widest" style="">Inactive</span>
-<span class="text-4xl font-manrope font-extrabold text-on-surface" style="">8</span>
+<span data-stats="inactive" class="text-4xl font-manrope font-extrabold text-on-surface" style="">8</span>
 <div class="mt-2 text-[10px] text-error font-semibold flex items-center gap-1" style="">
 <span class="material-symbols-outlined text-sm" data-icon="warning" style="">warning</span>
                     Requires attention
@@ -135,7 +135,7 @@
 </div>
 <div class="bg-surface-container-lowest p-6 rounded-xl shadow-[0_12px_32px_-4px_rgba(24,28,32,0.06)] flex flex-col gap-1 border-l-4 border-tertiary">
 <span class="text-xs font-bold text-on-surface-variant uppercase tracking-widest" style="">Last Run</span>
-<span class="text-xl font-manrope font-extrabold text-on-surface mt-2 leading-tight" style="">2026-05-10<br/>08:30 AM</span>
+<span data-stats="lastRun" class="text-xl font-manrope font-extrabold text-on-surface mt-2 leading-tight" style="">2026-05-10<br/>08:30 AM</span>
 <div class="mt-2 text-[10px] text-tertiary font-semibold flex items-center gap-1" style="">
 <span class="material-symbols-outlined text-sm" data-icon="sync" style="">sync</span>
                     Successful
@@ -146,15 +146,15 @@
 <!-- Main Management Area (2/3 width) -->
 <section class="lg:col-span-2 space-y-8">
 <!-- Table Card -->
-<div class="bg-surface-container-lowest rounded-xl shadow-[0_12px_32px_-4px_rgba(24,28,32,0.06)] overflow-hidden">
-<div class="px-8 py-6 border-b border-surface-container flex justify-between items-center bg-white">
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_12px_32px_-4px_rgba(24,28,32,0.06)] relative">
+<div class="px-8 py-6 border-b border-surface-container flex justify-between items-center bg-white rounded-t-xl">
 <h3 class="text-lg font-manrope font-bold text-on-surface" style="">Student Management</h3>
 <div class="flex gap-2">
 <div class="relative">
 <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm" data-icon="search" style="">search</span>
-<input class="pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-lg text-sm focus:ring-2 focus:ring-primary/20 w-64" placeholder="Search students..." type="text"/>
+<input id="student-search" oninput="handleSearch()" class="pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-lg text-sm focus:ring-2 focus:ring-primary/20 w-64" placeholder="Search students..." type="text"/>
 </div>
-<button class="p-2 hover:bg-surface-container-low rounded-lg transition-colors" style="">
+<button onclick="handleSort()" class="p-2 hover:bg-surface-container-low rounded-lg transition-colors" style="">
 <span class="material-symbols-outlined" data-icon="filter_list" style="">filter_list</span>
 </button>
 </div>
@@ -168,70 +168,21 @@
 <th class="px-4 py-4 text-center" style="">Grade</th>
 <th class="px-4 py-4 text-center" style="">Next Week</th>
 <th class="px-4 py-4" style="">Last Sent</th>
-<th class="px-4 py-4" style="">Active</th>
+<th class="px-4 py-4 text-center" style="">Active Status</th>
 </tr>
 </thead>
-<tbody class="text-sm font-medium">
-<tr class="border-b border-surface-container hover:bg-surface-bright transition-colors">
-<td class="px-8 py-5" style="">Alexander Wright</td>
-<td class="px-4 py-5 text-on-surface-variant" style="">a.wright@academy.edu</td>
-<td class="px-4 py-5 text-center" style=""><span class="bg-secondary-container px-2 py-1 rounded-md text-[10px]" style="">G11</span></td>
-<td class="px-4 py-5 text-center font-bold text-primary" style="">06</td>
-<td class="px-4 py-5 text-on-surface-variant" style="">May 09</td>
-<td class="px-4 py-5" style="">
-<div class="w-10 h-5 bg-emerald-500 rounded-full relative shadow-inner cursor-pointer">
-<div class="absolute right-1 top-1 w-3 h-3 bg-white rounded-full"></div>
-</div>
-</td>
-</tr>
-<tr class="border-b border-surface-container hover:bg-surface-bright transition-colors">
-<td class="px-8 py-5" style="">Elena Rodriguez</td>
-<td class="px-4 py-5 text-on-surface-variant" style="">e.rod@academy.edu</td>
-<td class="px-4 py-5 text-center" style=""><span class="bg-secondary-container px-2 py-1 rounded-md text-[10px]" style="">G12</span></td>
-<td class="px-4 py-5 text-center font-bold text-primary" style="">14</td>
-<td class="px-4 py-5 text-on-surface-variant" style="">May 08</td>
-<td class="px-4 py-5" style="">
-<div class="w-10 h-5 bg-emerald-500 rounded-full relative shadow-inner cursor-pointer">
-<div class="absolute right-1 top-1 w-3 h-3 bg-white rounded-full"></div>
-</div>
-</td>
-</tr>
-<tr class="border-b border-surface-container hover:bg-surface-bright transition-colors">
-<td class="px-8 py-5" style="">Marcus Thorne</td>
-<td class="px-4 py-5 text-on-surface-variant" style="">m.thorne@academy.edu</td>
-<td class="px-4 py-5 text-center" style=""><span class="bg-secondary-container px-2 py-1 rounded-md text-[10px]" style="">G10</span></td>
-<td class="px-4 py-5 text-center font-bold text-primary" style="">02</td>
-<td class="px-4 py-5 text-on-surface-variant" style="">May 03</td>
-<td class="px-4 py-5" style="">
-<div class="w-10 h-5 bg-surface-container-highest rounded-full relative shadow-inner cursor-pointer">
-<div class="absolute left-1 top-1 w-3 h-3 bg-white rounded-full"></div>
-</div>
-</td>
-</tr>
-<tr class="hover:bg-surface-bright transition-colors">
-<td class="px-8 py-5" style="">Sophia Chen</td>
-<td class="px-4 py-5 text-on-surface-variant" style="">s.chen@academy.edu</td>
-<td class="px-4 py-5 text-center" style=""><span class="bg-secondary-container px-2 py-1 rounded-md text-[10px]" style="">G11</span></td>
-<td class="px-4 py-5 text-center font-bold text-primary" style="">21</td>
-<td class="px-4 py-5 text-on-surface-variant" style="">May 10</td>
-<td class="px-4 py-5" style="">
-<div class="w-10 h-5 bg-emerald-500 rounded-full relative shadow-inner cursor-pointer">
-<div class="absolute right-1 top-1 w-3 h-3 bg-white rounded-full"></div>
-</div>
-</td>
-</tr>
+<tbody id="student-list" class="text-sm font-medium">
+<!-- Dynamically populated -->
 </tbody>
 </table>
 </div>
 <div class="px-8 py-4 bg-surface-container-low flex justify-between items-center text-xs text-on-surface-variant font-medium">
-<span class="" style="">Showing 4 of 150 students</span>
-<div class="flex gap-4">
-<button class="hover:text-primary" style="">Previous</button>
-<button class="text-primary font-bold" style="">1</button>
-<button class="hover:text-primary" style="">2</button>
-<button class="hover:text-primary" style="">3</button>
-<button class="hover:text-primary" style="">Next</button>
-</div>
+<span id="student-count-text" class="" style="">Showing 4 of 150 students</span>
+        <div id="pagination-controls" class="flex gap-4">
+            <button onclick="changePage(-1); return false;" class="hover:text-primary">Previous</button>
+            <span id="page-numbers" class="flex gap-2"></span>
+            <button onclick="changePage(1); return false;" class="hover:text-primary">Next</button>
+        </div>
 </div>
 </div>
 <!-- Recent Logs Panel -->
@@ -243,42 +194,8 @@
                         </h3>
 <button class="text-xs font-bold text-primary hover:underline uppercase tracking-wider" style="">Export Logs</button>
 </div>
-<div class="space-y-4">
-<div class="flex items-start gap-4 p-3 rounded-lg hover:bg-surface-container-low transition-colors group">
-<div class="w-2 h-2 rounded-full bg-emerald-500 mt-1.5 group-hover:scale-125 transition-transform"></div>
-<div>
-<p class="text-sm font-medium" style="">Sent <span class="font-bold" style="">week05</span> to <span class="text-primary" style="">a.wright@academy.edu</span></p>
-<span class="text-[10px] text-on-surface-variant" style="">Today, 08:30 AM • Success</span>
-</div>
-</div>
-<div class="flex items-start gap-4 p-3 rounded-lg hover:bg-surface-container-low transition-colors group border-l-2 border-transparent">
-<div class="w-2 h-2 rounded-full bg-emerald-500 mt-1.5 group-hover:scale-125 transition-transform"></div>
-<div>
-<p class="text-sm font-medium" style="">Sent <span class="font-bold" style="">week05</span> to <span class="text-primary" style="">e.rod@academy.edu</span></p>
-<span class="text-[10px] text-on-surface-variant" style="">Today, 08:31 AM • Success</span>
-</div>
-</div>
-<div class="flex items-start gap-4 p-3 rounded-lg hover:bg-surface-container-low transition-colors group">
-<div class="w-2 h-2 rounded-full bg-error mt-1.5 group-hover:scale-125 transition-transform"></div>
-<div>
-<p class="text-sm font-medium" style="">Failed to send to <span class="text-primary" style="">m.thorne@academy.edu</span></p>
-<span class="text-[10px] text-error font-bold italic" style="">User Inactive • Skipping automation</span>
-</div>
-</div>
-<div class="flex items-start gap-4 p-3 rounded-lg hover:bg-surface-container-low transition-colors group">
-<div class="w-2 h-2 rounded-full bg-emerald-500 mt-1.5 group-hover:scale-125 transition-transform"></div>
-<div>
-<p class="text-sm font-medium" style="">Sent <span class="font-bold" style="">week21</span> to <span class="text-primary" style="">s.chen@academy.edu</span></p>
-<span class="text-[10px] text-on-surface-variant" style="">Today, 08:35 AM • Success</span>
-</div>
-</div>
-<div class="flex items-start gap-4 p-3 rounded-lg hover:bg-surface-container-low transition-colors group">
-<div class="w-2 h-2 rounded-full bg-tertiary mt-1.5 group-hover:scale-125 transition-transform"></div>
-<div>
-<p class="text-sm font-medium" style="">System Maintenance: Database indexing completed</p>
-<span class="text-[10px] text-on-surface-variant" style="">Today, 04:00 AM • Routine</span>
-</div>
-</div>
+<div id="log-list" class="space-y-4">
+<!-- Dynamically populated -->
 </div>
 </div>
 </section>
@@ -287,28 +204,28 @@
 <!-- Add Student Panel -->
 <div class="bg-surface-container-lowest rounded-xl shadow-[0_12px_32px_-4px_rgba(24,28,32,0.06)] p-8">
 <h3 class="text-lg font-manrope font-bold text-on-surface mb-6" style="">Enroll New Student</h3>
-<form class="space-y-5">
+<form class="space-y-5" onsubmit="handleEnrollment(event)">
 <div class="space-y-2">
 <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest" style="">Full Name</label>
-<input class="w-full bg-surface-container-low border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary/20" placeholder="e.g. Julian Casablancas" type="text"/>
+<input id="fullName" name="fullName" class="w-full bg-surface-container-low border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary/20" placeholder="e.g. Julian Casablancas" type="text" required/>
 </div>
 <div class="space-y-2">
 <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest" style="">School Email</label>
-<input class="w-full bg-surface-container-low border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary/20" placeholder="j.casa@academy.edu" type="email"/>
+<input id="schoolEmail" name="schoolEmail" class="w-full bg-surface-container-low border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary/20" placeholder="j.casa@academy.edu" type="email" required/>
 </div>
 <div class="grid grid-cols-2 gap-4">
 <div class="space-y-2">
 <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest" style="">Grade</label>
-<select class="w-full bg-surface-container-low border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary/20">
-<option>Grade 9</option>
-<option>Grade 10</option>
-<option>Grade 11</option>
-<option>Grade 12</option>
+<select id="grade" name="grade" class="w-full bg-surface-container-low border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary/20">
+<option value="Grade9">Grade 9</option>
+<option value="Grade10">Grade 10</option>
+<option value="Grade11">Grade 11</option>
+<option value="Grade12">Grade 12</option>
 </select>
 </div>
 <div class="space-y-2">
 <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest" style="">Next Paper</label>
-<input class="w-full bg-surface-container-low border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary/20" placeholder="01" type="number"/>
+<input id="nextPaper" name="nextPaper" class="w-full bg-surface-container-low border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary/20" placeholder="01" type="number" required/>
 </div>
 </div>
 <button class="w-full paper-gradient text-white py-4 rounded-xl font-bold text-sm shadow-md mt-4 hover:shadow-lg transition-all active:scale-[0.98]" style="" type="submit">
@@ -375,4 +292,251 @@
 </div>
 </footer>
 <!-- Floating Action Button (FAB) -->
+<script>
+    let allStudents = [];
+    let filteredStudents = [];
+    let currentPage = 1;
+    const ROWS_PER_PAGE = 8;
+    let sortAsc = true;
+
+    /**
+     * Fetch and initialize dashboard data.
+     */
+    function loadData() {
+        google.script.run
+            .withSuccessHandler(updateUI)
+            .getDashboardData();
+    }
+
+    /**
+     * Update the dashboard UI with real data from Google Sheets.
+     */
+    function updateUI(data) {
+        if (!data) return;
+        
+        // Summary Stats
+        document.querySelector('span[data-stats="total"]').innerText = data.stats.total || 0;
+        document.querySelector('span[data-stats="active"]').innerText = data.stats.active || 0;
+        document.querySelector('span[data-stats="inactive"]').innerText = data.stats.inactive || 0;
+        document.querySelector('span[data-stats="lastRun"]').innerHTML = (data.stats.lastRun || 'N/A').replace(' ', '<br/>');
+
+        // Store data for search/sort/pagination
+        allStudents = data.students;
+        
+        // Recalculate filtered list based on current UI state
+        const query = document.getElementById('student-search').value.toLowerCase();
+        if (query) {
+            filteredStudents = allStudents.filter(s => 
+                s.name.toLowerCase().includes(query) || 
+                s.email.toLowerCase().includes(query) || 
+                s.grade.toLowerCase().includes(query)
+            );
+        } else {
+            filteredStudents = [...allStudents];
+        }
+        
+        // Keep sorting if it was applied (simple implementation)
+        if (!sortAsc) { // If it was descending, re-sort
+             filteredStudents.sort((a, b) => b.name.localeCompare(a.name));
+        } else {
+             // By default we don't force sort unless specifically requested, 
+             // but let's at least render the page.
+        }
+
+        renderTable();
+
+        // Logs
+        const logContent = document.getElementById('log-list');
+        logContent.innerHTML = ''; // Clear logs
+        
+        data.logs.forEach(log => {
+            const color = log.status === 'Success' ? 'bg-emerald-500' : (log.status === 'Error' ? 'bg-error' : 'bg-tertiary');
+            const alertText = log.status === 'Error' ? 'text-error font-bold italic' : 'text-on-surface-variant';
+            
+            const logEntry = document.createElement('div');
+            logEntry.className = 'flex items-start gap-4 p-3 rounded-lg hover:bg-surface-container-low transition-colors group';
+            logEntry.innerHTML = `
+                <div class="w-2 h-2 rounded-full ${color} mt-1.5 group-hover:scale-125 transition-transform"></div>
+                <div>
+                    <p class="text-sm font-medium">${log.message} <span class="text-primary">${log.email}</span></p>
+                    <span class="text-[10px] ${alertText}">${log.timestamp} • ${log.status}</span>
+                </div>
+            `;
+            logContent.appendChild(logEntry);
+        });
+    }
+
+    function renderTable() {
+        const studentList = document.getElementById('student-list');
+        studentList.innerHTML = ''; 
+        
+        const start = (currentPage - 1) * ROWS_PER_PAGE;
+        const end = start + ROWS_PER_PAGE;
+        const pageItems = filteredStudents.slice(start, end);
+
+        pageItems.forEach(item => {
+            const isActive = item.active === true || item.active === 'Yes';
+            const row = document.createElement('tr');
+            row.className = 'border-b border-surface-container hover:bg-surface-bright transition-colors relative z-0';
+            row.innerHTML = `
+                <td class="px-8 py-5 transition-all">${item.name}</td>
+                <td class="px-4 py-5 text-on-surface-variant transition-all">${item.email}</td>
+                <td class="px-4 py-5 text-center transition-all"><span class="bg-secondary-container px-2 py-1 rounded-md text-[10px]">${item.grade}</span></td>
+                <td class="px-4 py-5 text-center font-bold text-primary transition-all">${item.nextWeek}</td>
+                <td class="px-4 py-5 text-on-surface-variant transition-all">${item.lastSent}</td>
+                <td class="px-4 py-5 text-center transition-all">
+                    <button onclick="toggleActive('${item.email}', ${isActive})" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${isActive ? 'bg-emerald-500' : 'bg-surface-container-highest'}">
+                        <span class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${isActive ? 'translate-x-6' : 'translate-x-1'}"></span>
+                    </button>
+                </td>
+            `;
+            studentList.appendChild(row);
+        });
+
+        updatePagination();
+    }
+
+    /**
+     * Handle search input.
+     */
+    function handleSearch() {
+        const query = document.getElementById('student-search').value.toLowerCase();
+        filteredStudents = allStudents.filter(s => 
+            s.name.toLowerCase().includes(query) || 
+            s.email.toLowerCase().includes(query) || 
+            s.grade.toLowerCase().includes(query)
+        );
+        currentPage = 1;
+        renderTable();
+    }
+
+    /**
+     * Handle alphabetical sort by name.
+     */
+    function handleSort() {
+        filteredStudents.sort((a, b) => {
+            return sortAsc ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
+        });
+        sortAsc = !sortAsc;
+        renderTable();
+    }
+
+    function updatePagination() {
+        const totalPages = Math.ceil(filteredStudents.length / ROWS_PER_PAGE);
+        const countText = document.getElementById('student-count-text');
+        
+        const start = filteredStudents.length > 0 ? (currentPage - 1) * ROWS_PER_PAGE + 1 : 0;
+        const end = Math.min(currentPage * ROWS_PER_PAGE, filteredStudents.length);
+        countText.innerText = `Showing ${start}-${end} of ${filteredStudents.length} entries`;
+
+        const pageNumbers = document.getElementById('page-numbers');
+        pageNumbers.innerHTML = '';
+        
+        for (let i = 1; i <= totalPages; i++) {
+            const btn = document.createElement('button');
+            btn.type = 'button'; 
+            btn.innerText = i;
+            btn.className = `px-2 ${currentPage === i ? 'text-primary font-bold' : 'hover:text-primary'}`;
+            btn.onclick = (e) => { 
+                e.preventDefault();
+                e.stopPropagation();
+                currentPage = i; 
+                renderTable();
+                return false;
+            };
+            pageNumbers.appendChild(btn);
+        }
+    }
+
+    /**
+     * Change page.
+     */
+    function changePage(dir) {
+        const totalPages = Math.ceil(filteredStudents.length / ROWS_PER_PAGE);
+        const next = currentPage + dir;
+        if (next >= 1 && next <= totalPages) {
+            currentPage = next;
+            renderTable();
+        }
+        return false;
+    }
+
+    /**
+     * Set the student's active status.
+     * @param {string} email
+     * @param {boolean} currentStatus
+     */
+    function toggleActive(email, currentStatus) {
+        const newStatus = !currentStatus;
+        const statusString = newStatus ? 'Yes' : 'No';
+        
+        // Optimistic UI Update: update the local data first
+        const studentIndex = allStudents.findIndex(s => s.email === email);
+        if (studentIndex > -1) {
+            allStudents[studentIndex].active = newStatus;
+            
+            // Re-filter if necessary
+            const filteredIndex = filteredStudents.findIndex(s => s.email === email);
+            if (filteredIndex > -1) {
+                filteredStudents[filteredIndex].active = newStatus;
+            }
+            
+            renderTable();
+        }
+
+        google.script.run
+            .withSuccessHandler(function(res) {
+                // Background refresh to sync any other status changes
+                loadData();
+            })
+            .withFailureHandler(function(err) {
+                alert("Error updating status: " + err.message);
+                loadData(); // Revert on failure
+            })
+            .updateStudentStatus(email, statusString);
+    }
+
+    /**
+     * Submit the Send Papers request.
+     */
+    function sendPapers() {
+        const btn = document.getElementById('send-papers-btn');
+        btn.disabled = true;
+        btn.innerText = 'Sending...';
+        
+        google.script.run
+            .withSuccessHandler(function(res) {
+                alert("Paper delivery process initiated.");
+                btn.disabled = false;
+                btn.innerHTML = `<span class="material-symbols-outlined" data-icon="bolt">bolt</span> Send Papers Now`;
+                loadData(); // Refresh UI
+            })
+            .sendWeeklyPaper();
+    }
+
+    /**
+     * Add new student handle.
+     */
+    function handleEnrollment(event) {
+        event.preventDefault();
+        const form = event.target;
+        const student = {
+            name: form.fullName.value,
+            email: form.schoolEmail.value,
+            grade: form.grade.value,
+            nextWeek: form.nextPaper.value
+        };
+
+        google.script.run
+            .withSuccessHandler(function(res) {
+                alert("Student enrolled successfully.");
+                form.reset();
+                loadData(); // Refresh UI
+            })
+            .addStudent(student);
+    }
+
+    // Call on load
+    document.addEventListener('DOMContentLoaded', loadData);
+</script>
 </body></html>
