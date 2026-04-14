@@ -1,6 +1,6 @@
 function doGet() {
   return HtmlService.createHtmlOutputFromFile('dashboard')
-      .setTitle('The Academic Atelier | Paper Automation System')
+      .setTitle('Think Like ICT | Paper Automation System')
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
