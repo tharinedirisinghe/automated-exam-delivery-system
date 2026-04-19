@@ -201,3 +201,28 @@ function updateStudentStatus(email, status) {
  * Toggle active status of a student (Legacy).
  */
 
+function getLogoDataUri() {
+  const props = PropertiesService.getScriptProperties();
+  const fileId = props.getProperty('LOGO_FILE_ID');
+
+  if (!fileId) {
+    throw new Error('LOGO_FILE_ID is not set in Script Properties.');
+  }
+
+  const cache = CacheService.getScriptCache();
+  const cacheKey = 'dashboard_logo_data_uri';
+  const cached = cache.get(cacheKey);
+  if (cached) return cached;
+
+  const file = DriveApp.getFileById(fileId);
+  const blob = file.getBlob();
+  const mimeType = blob.getContentType();
+  const base64 = Utilities.base64Encode(blob.getBytes());
+  const dataUri = 'data:' + mimeType + ';base64,' + base64;
+
+  // Cache for 6 hours (max 21600 seconds)
+  cache.put(cacheKey, dataUri, 21600);
+
+  return dataUri;
+}
+

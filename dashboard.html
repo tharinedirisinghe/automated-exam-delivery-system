@@ -93,7 +93,11 @@
 <!-- Top App Bar -->
 <header class="fixed top-0 right-0 left-0 z-30 bg-[#f7f9ff]/80 dark:bg-slate-900/80 backdrop-blur-md px-8 py-4 flex justify-between items-center shadow-[0_12px_32px_-4px_rgba(24,28,32,0.06)]">
 <div class="flex items-center gap-6">
-<img alt="Atelier Logo" class="w-20 h-20 rounded-xl object-contain bg-white shadow-md p-2" src="https://lh3.googleusercontent.com/aida/ADBb0ugGDB5vOf1wUXHLGVP6TjAopPlxuKxn5L-SpxNjUgpTmsjSmvRiU71G5CJJZ9voy5TXzP9WPDaqHN81TfpwX35qEDf194k1BxPVWHGpRUhNUjZaPdc1-rXEH3B-cpfeHsJlxV9-PsDFncd1ehwGi6Ngeo0-Dy-edI1HMW0Z2DwiL-Ro6rAp3T90nO3sLCRXRFTIyarL9W-7VBNy8XbO0D5jFODGlkKynlHirrM9O6euslfpQIsOfscheFz9v45esRsFwwJz-TIPkw" style=""/>
+<img
+  id="header-logo"
+  alt="Atelier Logo"
+  class="w-20 h-20 rounded-xl object-contain bg-white shadow-md p-2"
+  src="https://lh3.googleusercontent.com/aida/ADBb0ugGDB5vOf1wUXHLGVP6TjAopPlxuKxn5L-SpxNjUgpTmsjSmvRiU71G5CJJZ9voy5TXzP9WPDaqHN81TfpwX35qEDf194k1BxPVWHGpRUhNUjZaPdc1-rXEH3B-cpfeHsJlxV9-PsDFncd1ehwGi6Ngeo0-Dy-edI1HMW0Z2DwiL-Ro6rAp3T90nO3sLCRXRFTIyarL9W-7VBNy8XbO0D5jFODGlkKynlHirrM9O6euslfpQIsOfscheFz9v45esRsFwwJz-TIPkw" style=""/>
 <div class="flex flex-col">
 <h1 class="font-manrope text-2xl font-extrabold tracking-tight text-[#181c20]" style="">Paper Automation System</h1>
 </div>
@@ -448,6 +452,30 @@
         }
     }
 
+    function loadLogo() {
+  const logoEl = document.getElementById('header-logo');
+  if (!logoEl) return;
+
+  // Optional tiny fallback placeholder
+  const fallback =
+    'data:image/svg+xml;utf8,' +
+    encodeURIComponent(
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">' +
+      '<rect width="120" height="120" rx="16" fill="#f1f4fa"/>' +
+      '<text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" font-family="Arial" font-size="16" fill="#835400">Atelier</text>' +
+      '</svg>'
+    );
+
+  google.script.run
+    .withSuccessHandler(function (dataUri) {
+      logoEl.src = dataUri || fallback;
+    })
+    .withFailureHandler(function () {
+      logoEl.src = fallback;
+    })
+    .getLogoDataUri();
+}
+
     /**
      * Change page.
      */
@@ -537,6 +565,9 @@
     }
 
     // Call on load
-    document.addEventListener('DOMContentLoaded', loadData);
+    document.addEventListener('DOMContentLoaded', function () {
+        loadLogo();
+        loadData();
+    });
 </script>
 </body></html>
