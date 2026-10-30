@@ -117,7 +117,8 @@ function sendWeeklyPaper() {
 
 Here is your week ${nextWeek} revision paper.
 
-- Tharin`,
+Thank you.
+Tharin Edirisinghe`,
       {
         attachments: [file.getBlob()]
       }
