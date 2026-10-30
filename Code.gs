@@ -1,7 +1,77 @@
+const MEDIUMS = {
+  english: { label: "English", parentFolder: "RevisionPapers", fileSuffix: "" },
+  sinhala: { label: "Sinhala", parentFolder: "RevisionPapers - Sinhala", fileSuffix: " - Sinhala" }
+};
+
 function doGet() {
   return HtmlService.createHtmlOutputFromFile('dashboard')
       .setTitle('Think Like ICT | Paper Automation System')
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+/**
+ * Get the settings for a medium. A blank value counts as English;
+ * an unrecognised value returns null so the student is never sent the wrong paper.
+ */
+function getMediumConfig(value) {
+  const key = String(value || "").trim().toLowerCase() || "english";
+  return MEDIUMS[key] || null;
+}
+
+/**
+ * Get the 1-based position of the Medium column, adding the column if it is missing.
+ */
+function getMediumColumn(sheet) {
+  const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  const index = headers.findIndex(h => String(h).trim().toLowerCase() === "medium");
+
+  if (index !== -1) return index + 1;
+
+  sheet.getRange(1, headers.length + 1).setValue("Medium");
+  return headers.length + 1;
+}
+
+/**
+ * Find a student's next paper in Drive.
+ * Returns { file, fileName }, or { error } describing what is missing.
+ */
+function findPaper(grade, nextWeek, mediumValue) {
+
+  if (!grade || isNaN(nextWeek)) {
+    return { error: "Invalid grade/week" };
+  }
+
+  const medium = getMediumConfig(mediumValue);
+
+  if (!medium) {
+    return { error: "Invalid medium: " + mediumValue };
+  }
+
+  const parentFolders =
+    DriveApp.getFoldersByName(medium.parentFolder);
+
+  if (!parentFolders.hasNext()) {
+    return { error: "Medium folder not found: " + medium.parentFolder };
+  }
+
+  const gradeFolders =
+    parentFolders.next().getFoldersByName(grade);
+
+  if (!gradeFolders.hasNext()) {
+    return { error: `Grade folder not found: ${medium.parentFolder}/${grade}` };
+  }
+
+  const fileName =
+    `week${String(nextWeek).padStart(2,'0')}${medium.fileSuffix}.pdf`;
+
+  const files =
+    gradeFolders.next().getFilesByName(fileName);
+
+  if (!files.hasNext()) {
+    return { error: "File not found: " + fileName };
+  }
+
+  return { file: files.next(), fileName: fileName };
 }
 
 function sendWeeklyPaper() {
@@ -11,9 +81,8 @@ function sendWeeklyPaper() {
   const studentSheet = ss.getSheetByName("Students");
   const logSheet = ss.getSheetByName("Logs");
 
+  const mediumColumn = getMediumColumn(studentSheet);
   const data = studentSheet.getDataRange().getValues();
-
-  const parentFolder = DriveApp.getFoldersByName("RevisionPapers").next();
 
   for (let i = 1; i < data.length; i++) {
 
@@ -25,51 +94,21 @@ function sendWeeklyPaper() {
 
     if (active !== "yes") continue;
 
-    if (!grade || isNaN(nextWeek)) {
+    const paper = findPaper(grade, nextWeek, data[i][mediumColumn - 1]);
+
+    if (paper.error) {
 
       logSheet.appendRow([
         new Date(),
         email,
-        "Invalid grade/week"
+        paper.error
       ]);
 
       continue;
     }
 
-    const gradeFolders =
-      parentFolder.getFoldersByName(grade);
-
-    if (!gradeFolders.hasNext()) {
-
-      logSheet.appendRow([
-        new Date(),
-        email,
-        "Grade folder not found: " + grade
-      ]);
-
-      continue;
-    }
-
-    const gradeFolder = gradeFolders.next();
-
-    const fileName =
-      `week${String(nextWeek).padStart(2,'0')}.pdf`;
-
-    const files =
-      gradeFolder.getFilesByName(fileName);
-
-    if (!files.hasNext()) {
-
-      logSheet.appendRow([
-        new Date(),
-        email,
-        "File not found: " + fileName
-      ]);
-
-      continue;
-    }
-
-    const file = files.next();
+    const file = paper.file;
+    const fileName = paper.fileName;
 
     GmailApp.sendEmail(
       email,
@@ -141,7 +180,7 @@ function getDashboardData() {
     timestamp: Utilities.formatDate(new Date(row[0]), Session.getScriptTimeZone(), "MMM dd, hh:mm a"),
     email: row[1],
     message: row[2],
-    status: row[2].includes("Sent") ? "Success" : (row[2].includes("Failed") || row[2].includes("not found") ? "Error" : "Info")
+    status: row[2].includes("Sent") ? "Success" : (row[2].includes("Failed") || row[2].includes("not found") || row[2].includes("Invalid") ? "Error" : "Info")
   }));
 
   // Find last run date from logs
