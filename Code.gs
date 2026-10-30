@@ -1,7 +1,77 @@
+const MEDIUMS = {
+  english: { label: "English", parentFolder: "RevisionPapers", fileSuffix: "" },
+  sinhala: { label: "Sinhala", parentFolder: "RevisionPapers - Sinhala", fileSuffix: " - Sinhala" }
+};
+
 function doGet() {
   return HtmlService.createHtmlOutputFromFile('dashboard')
       .setTitle('Think Like ICT | Paper Automation System')
       .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+/**
+ * Get the settings for a medium. A blank value counts as English;
+ * an unrecognised value returns null so the student is never sent the wrong paper.
+ */
+function getMediumConfig(value) {
+  const key = String(value || "").trim().toLowerCase() || "english";
+  return MEDIUMS[key] || null;
+}
+
+/**
+ * Get the 1-based position of the Medium column, adding the column if it is missing.
+ */
+function getMediumColumn(sheet) {
+  const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  const index = headers.findIndex(h => String(h).trim().toLowerCase() === "medium");
+
+  if (index !== -1) return index + 1;
+
+  sheet.getRange(1, headers.length + 1).setValue("Medium");
+  return headers.length + 1;
+}
+
+/**
+ * Find a student's next paper in Drive.
+ * Returns { file, fileName }, or { error } describing what is missing.
+ */
+function findPaper(grade, nextWeek, mediumValue) {
+
+  if (!grade || isNaN(nextWeek)) {
+    return { error: "Invalid grade/week" };
+  }
+
+  const medium = getMediumConfig(mediumValue);
+
+  if (!medium) {
+    return { error: "Invalid medium: " + mediumValue };
+  }
+
+  const parentFolders =
+    DriveApp.getFoldersByName(medium.parentFolder);
+
+  if (!parentFolders.hasNext()) {
+    return { error: "Medium folder not found: " + medium.parentFolder };
+  }
+
+  const gradeFolders =
+    parentFolders.next().getFoldersByName(grade);
+
+  if (!gradeFolders.hasNext()) {
+    return { error: `Grade folder not found: ${medium.parentFolder}/${grade}` };
+  }
+
+  const fileName =
+    `week${String(nextWeek).padStart(2,'0')}${medium.fileSuffix}.pdf`;
+
+  const files =
+    gradeFolders.next().getFilesByName(fileName);
+
+  if (!files.hasNext()) {
+    return { error: "File not found: " + fileName };
+  }
+
+  return { file: files.next(), fileName: fileName };
 }
 
 function sendWeeklyPaper() {
@@ -11,9 +81,8 @@ function sendWeeklyPaper() {
   const studentSheet = ss.getSheetByName("Students");
   const logSheet = ss.getSheetByName("Logs");
 
+  const mediumColumn = getMediumColumn(studentSheet);
   const data = studentSheet.getDataRange().getValues();
-
-  const parentFolder = DriveApp.getFoldersByName("RevisionPapers").next();
 
   for (let i = 1; i < data.length; i++) {
 
@@ -25,51 +94,21 @@ function sendWeeklyPaper() {
 
     if (active !== "yes") continue;
 
-    if (!grade || isNaN(nextWeek)) {
+    const paper = findPaper(grade, nextWeek, data[i][mediumColumn - 1]);
+
+    if (paper.error) {
 
       logSheet.appendRow([
         new Date(),
         email,
-        "Invalid grade/week"
+        paper.error
       ]);
 
       continue;
     }
 
-    const gradeFolders =
-      parentFolder.getFoldersByName(grade);
-
-    if (!gradeFolders.hasNext()) {
-
-      logSheet.appendRow([
-        new Date(),
-        email,
-        "Grade folder not found: " + grade
-      ]);
-
-      continue;
-    }
-
-    const gradeFolder = gradeFolders.next();
-
-    const fileName =
-      `week${String(nextWeek).padStart(2,'0')}.pdf`;
-
-    const files =
-      gradeFolder.getFilesByName(fileName);
-
-    if (!files.hasNext()) {
-
-      logSheet.appendRow([
-        new Date(),
-        email,
-        "File not found: " + fileName
-      ]);
-
-      continue;
-    }
-
-    const file = files.next();
+    const file = paper.file;
+    const fileName = paper.fileName;
 
     GmailApp.sendEmail(
       email,
@@ -78,7 +117,8 @@ function sendWeeklyPaper() {
 
 Here is your week ${nextWeek} revision paper.
 
-- Tharin`,
+Thank you.
+Tharin Edirisinghe`,
       {
         attachments: [file.getBlob()]
       }
@@ -107,13 +147,33 @@ Here is your week ${nextWeek} revision paper.
 }
 
 /**
+ * Check which paper each active student would get next, without sending anything.
+ * Run this from the Apps Script editor and read the execution log.
+ */
+function previewNextSend() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Students");
+  const mediumColumn = getMediumColumn(sheet);
+  const data = sheet.getDataRange().getValues();
+
+  for (let i = 1; i < data.length; i++) {
+    if (String(data[i][3]).trim().toLowerCase() !== "yes") continue;
+
+    const grade = String(data[i][2]).trim();
+    const paper = findPaper(grade, Number(data[i][4]), data[i][mediumColumn - 1]);
+
+    Logger.log(`${data[i][1]} (${grade}): ${paper.error || paper.fileName}`);
+  }
+}
+
+/**
  * Get dashboard data including summary stats, student list, and recent logs.
  */
 function getDashboardData() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const studentSheet = ss.getSheetByName("Students");
   const logSheet = ss.getSheetByName("Logs");
-  
+
+  const mediumColumn = getMediumColumn(studentSheet);
   const studentData = studentSheet.getDataRange().getValues();
   const headers = studentData.shift(); // Remove headers
   
@@ -124,11 +184,14 @@ function getDashboardData() {
   const students = studentData.map(row => {
     const isActive = String(row[3]).trim().toLowerCase() === "yes";
     if (isActive) activeStudents++; else inactiveStudents++;
-    
+
+    const medium = getMediumConfig(row[mediumColumn - 1]);
+
     return {
       name: row[0],
       email: row[1],
       grade: row[2],
+      medium: medium ? medium.label : String(row[mediumColumn - 1]).trim(),
       active: isActive,
       nextWeek: row[4],
       lastSent: row[5] ? Utilities.formatDate(new Date(row[5]), Session.getScriptTimeZone(), "MMM dd") : "Never"
@@ -141,7 +204,7 @@ function getDashboardData() {
     timestamp: Utilities.formatDate(new Date(row[0]), Session.getScriptTimeZone(), "MMM dd, hh:mm a"),
     email: row[1],
     message: row[2],
-    status: row[2].includes("Sent") ? "Success" : (row[2].includes("Failed") || row[2].includes("not found") ? "Error" : "Info")
+    status: row[2].includes("Sent") ? "Success" : (row[2].includes("Failed") || row[2].includes("not found") || row[2].includes("Invalid") ? "Error" : "Info")
   }));
 
   // Find last run date from logs
@@ -169,6 +232,7 @@ function getDashboardData() {
 function addStudent(student) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet = ss.getSheetByName("Students");
+  const mediumColumn = getMediumColumn(sheet);
   sheet.appendRow([
     student.name,
     student.email,
@@ -177,6 +241,7 @@ function addStudent(student) {
     student.nextWeek,
     "" // last sent
   ]);
+  sheet.getRange(sheet.getLastRow(), mediumColumn).setValue(student.medium);
   return "Student added successfully!";
 }
 
@@ -198,6 +263,27 @@ function updateStudentStatus(email, status) {
 }
 
 /**
+ * Update the medium of a student.
+ */
+function updateStudentMedium(email, medium) {
+  const config = getMediumConfig(medium);
+  if (!config) throw new Error("Invalid medium: " + medium);
+
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName("Students");
+  const mediumColumn = getMediumColumn(sheet);
+  const data = sheet.getRange("B:B").getValues(); // Check email column (B)
+
+  for (let i = 1; i < data.length; i++) {
+    if (data[i][0] === email) {
+      sheet.getRange(i + 1, mediumColumn).setValue(config.label);
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
  * Toggle active status of a student (Legacy).
  */
 
@@ -209,12 +295,14 @@ function getLogoDataUri() {
     throw new Error('LOGO_FILE_ID is not set in Script Properties.');
   }
 
+  const file = DriveApp.getFileById(fileId);
+
+  // Key includes the last update so a new logo shows without waiting for the cache
   const cache = CacheService.getScriptCache();
-  const cacheKey = 'dashboard_logo_data_uri';
+  const cacheKey = 'dashboard_logo_' + fileId + '_' + file.getLastUpdated().getTime();
   const cached = cache.get(cacheKey);
   if (cached) return cached;
 
-  const file = DriveApp.getFileById(fileId);
   const blob = file.getBlob();
   const mimeType = blob.getContentType();
   const base64 = Utilities.base64Encode(blob.getBytes());

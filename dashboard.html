@@ -3,7 +3,7 @@
 <html class="light" lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>The Academic Atelier | Paper Automation System</title>
+<title>Think Like ICT | Paper Automation System</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Manrope:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -95,9 +95,8 @@
 <div class="flex items-center gap-6">
 <img
   id="header-logo"
-  alt="Atelier Logo"
-  class="w-20 h-20 rounded-xl object-contain bg-white shadow-md p-2"
-  src="https://lh3.googleusercontent.com/aida/ADBb0ugGDB5vOf1wUXHLGVP6TjAopPlxuKxn5L-SpxNjUgpTmsjSmvRiU71G5CJJZ9voy5TXzP9WPDaqHN81TfpwX35qEDf194k1BxPVWHGpRUhNUjZaPdc1-rXEH3B-cpfeHsJlxV9-PsDFncd1ehwGi6Ngeo0-Dy-edI1HMW0Z2DwiL-Ro6rAp3T90nO3sLCRXRFTIyarL9W-7VBNy8XbO0D5jFODGlkKynlHirrM9O6euslfpQIsOfscheFz9v45esRsFwwJz-TIPkw" style=""/>
+  alt="Think Like ICT Logo"
+  class="w-20 h-20 rounded-xl object-contain bg-white shadow-md p-2" style=""/>
 <div class="flex flex-col">
 <h1 class="font-manrope text-2xl font-extrabold tracking-tight text-[#181c20]" style="">Paper Automation System</h1>
 </div>
@@ -170,6 +169,7 @@
 <th class="px-8 py-4" style="">Name</th>
 <th class="px-4 py-4" style="">Email</th>
 <th class="px-4 py-4 text-center" style="">Grade</th>
+<th class="px-4 py-4 text-center" style="">Medium</th>
 <th class="px-4 py-4 text-center" style="">Next Week</th>
 <th class="px-4 py-4" style="">Last Sent</th>
 <th class="px-4 py-4 text-center" style="">Active Status</th>
@@ -231,6 +231,13 @@
 <label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest" style="">Next Paper</label>
 <input id="nextPaper" name="nextPaper" class="w-full bg-surface-container-low border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary/20" placeholder="01" type="number" required/>
 </div>
+</div>
+<div class="space-y-2">
+<label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest" style="">Medium</label>
+<select id="medium" name="medium" class="w-full bg-surface-container-low border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary/20">
+<option value="English">English</option>
+<option value="Sinhala">Sinhala</option>
+</select>
 </div>
 <button class="w-full paper-gradient text-white py-4 rounded-xl font-bold text-sm shadow-md mt-4 hover:shadow-lg transition-all active:scale-[0.98]" style="" type="submit">
                             Add Student to System
@@ -302,6 +309,7 @@
     let currentPage = 1;
     const ROWS_PER_PAGE = 8;
     let sortAsc = true;
+    const MEDIUMS = ['English', 'Sinhala'];
 
     /**
      * Fetch and initialize dashboard data.
@@ -332,8 +340,9 @@
         if (query) {
             filteredStudents = allStudents.filter(s => 
                 s.name.toLowerCase().includes(query) || 
-                s.email.toLowerCase().includes(query) || 
-                s.grade.toLowerCase().includes(query)
+                s.email.toLowerCase().includes(query) ||
+                s.grade.toLowerCase().includes(query) ||
+                s.medium.toLowerCase().includes(query)
             );
         } else {
             filteredStudents = [...allStudents];
@@ -380,12 +389,19 @@
 
         pageItems.forEach(item => {
             const isActive = item.active === true || item.active === 'Yes';
+            // Keep an unrecognised sheet value visible so it can be spotted and corrected
+            const mediumOptions = (MEDIUMS.includes(item.medium) ? MEDIUMS : [item.medium, ...MEDIUMS])
+                .map(m => `<option value="${m}" ${m === item.medium ? 'selected' : ''}>${m}</option>`)
+                .join('');
             const row = document.createElement('tr');
             row.className = 'border-b border-surface-container hover:bg-surface-bright transition-colors relative z-0';
             row.innerHTML = `
                 <td class="px-8 py-5 transition-all">${item.name}</td>
                 <td class="px-4 py-5 text-on-surface-variant transition-all">${item.email}</td>
                 <td class="px-4 py-5 text-center transition-all"><span class="bg-secondary-container px-2 py-1 rounded-md text-[10px]">${item.grade}</span></td>
+                <td class="px-4 py-5 text-center transition-all">
+                    <select onchange="changeMedium('${item.email}', this.value)" class="bg-secondary-container border-none rounded-md text-[10px] py-1 pl-2 pr-7 focus:ring-2 focus:ring-primary/20">${mediumOptions}</select>
+                </td>
                 <td class="px-4 py-5 text-center font-bold text-primary transition-all">${item.nextWeek}</td>
                 <td class="px-4 py-5 text-on-surface-variant transition-all">${item.lastSent}</td>
                 <td class="px-4 py-5 text-center transition-all">
@@ -407,8 +423,9 @@
         const query = document.getElementById('student-search').value.toLowerCase();
         filteredStudents = allStudents.filter(s => 
             s.name.toLowerCase().includes(query) || 
-            s.email.toLowerCase().includes(query) || 
-            s.grade.toLowerCase().includes(query)
+            s.email.toLowerCase().includes(query) ||
+            s.grade.toLowerCase().includes(query) ||
+            s.medium.toLowerCase().includes(query)
         );
         currentPage = 1;
         renderTable();
@@ -456,22 +473,10 @@
   const logoEl = document.getElementById('header-logo');
   if (!logoEl) return;
 
-  // Optional tiny fallback placeholder
-  const fallback =
-    'data:image/svg+xml;utf8,' +
-    encodeURIComponent(
-      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">' +
-      '<rect width="120" height="120" rx="16" fill="#f1f4fa"/>' +
-      '<text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" font-family="Arial" font-size="16" fill="#835400">Atelier</text>' +
-      '</svg>'
-    );
-
+  // If the logo can't be loaded, the img alt text shows instead
   google.script.run
     .withSuccessHandler(function (dataUri) {
-      logoEl.src = dataUri || fallback;
-    })
-    .withFailureHandler(function () {
-      logoEl.src = fallback;
+      logoEl.src = dataUri;
     })
     .getLogoDataUri();
 }
@@ -525,6 +530,23 @@
     }
 
     /**
+     * Set the student's medium.
+     * @param {string} email
+     * @param {string} medium
+     */
+    function changeMedium(email, medium) {
+        google.script.run
+            .withSuccessHandler(function(res) {
+                loadData();
+            })
+            .withFailureHandler(function(err) {
+                alert("Error updating medium: " + err.message);
+                loadData(); // Revert on failure
+            })
+            .updateStudentMedium(email, medium);
+    }
+
+    /**
      * Submit the Send Papers request.
      */
     function sendPapers() {
@@ -552,6 +574,7 @@
             name: form.fullName.value,
             email: form.schoolEmail.value,
             grade: form.grade.value,
+            medium: form.medium.value,
             nextWeek: form.nextPaper.value
         };
 
