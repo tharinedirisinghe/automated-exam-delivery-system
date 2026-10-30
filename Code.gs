@@ -171,7 +171,8 @@ function getDashboardData() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const studentSheet = ss.getSheetByName("Students");
   const logSheet = ss.getSheetByName("Logs");
-  
+
+  const mediumColumn = getMediumColumn(studentSheet);
   const studentData = studentSheet.getDataRange().getValues();
   const headers = studentData.shift(); // Remove headers
   
@@ -182,11 +183,14 @@ function getDashboardData() {
   const students = studentData.map(row => {
     const isActive = String(row[3]).trim().toLowerCase() === "yes";
     if (isActive) activeStudents++; else inactiveStudents++;
-    
+
+    const medium = getMediumConfig(row[mediumColumn - 1]);
+
     return {
       name: row[0],
       email: row[1],
       grade: row[2],
+      medium: medium ? medium.label : String(row[mediumColumn - 1]).trim(),
       active: isActive,
       nextWeek: row[4],
       lastSent: row[5] ? Utilities.formatDate(new Date(row[5]), Session.getScriptTimeZone(), "MMM dd") : "Never"
