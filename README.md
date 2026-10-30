@@ -47,8 +47,10 @@ Main files:
 
 `Students` headers:
 
-| Name | Email | Grade | Active | NextWeek | LastSentDate |
-|---|---|---|---|---|---|
+| Name | Email | Grade | Active | NextWeek | LastSentDate | Medium |
+|---|---|---|---|---|---|---|
+
+`Medium` is `English` or `Sinhala`. A blank counts as English. Any other value is logged and that student is skipped.
 
 `Logs` headers:
 
@@ -60,6 +62,10 @@ Main files:
   - `week01.pdf`
   - `week02.pdf`
   - `week03.pdf`
+  - etc.
+- A Drive folder named `RevisionPapers - Sinhala` with the same grade subfolders, for Sinhala medium papers, using this naming format:
+  - `week01 - Sinhala.pdf`
+  - `week02 - Sinhala.pdf`
   - etc.
 
 ### 2) Set Up In Google Apps Script
@@ -98,6 +104,10 @@ function getDashboardData()
 // Dashboard actions
 function addStudent(student)
 function updateStudentStatus(email, status)
+function updateStudentMedium(email, medium)
+
+// Logs the paper each active student would get next, without sending anything
+function previewNextSend()
 ```
 
 ## Where To Get Help
