@@ -169,6 +169,7 @@
 <th class="px-8 py-4" style="">Name</th>
 <th class="px-4 py-4" style="">Email</th>
 <th class="px-4 py-4 text-center" style="">Grade</th>
+<th class="px-4 py-4 text-center" style="">Medium</th>
 <th class="px-4 py-4 text-center" style="">Next Week</th>
 <th class="px-4 py-4" style="">Last Sent</th>
 <th class="px-4 py-4 text-center" style="">Active Status</th>
@@ -301,6 +302,7 @@
     let currentPage = 1;
     const ROWS_PER_PAGE = 8;
     let sortAsc = true;
+    const MEDIUMS = ['English', 'Sinhala'];
 
     /**
      * Fetch and initialize dashboard data.
@@ -331,8 +333,9 @@
         if (query) {
             filteredStudents = allStudents.filter(s => 
                 s.name.toLowerCase().includes(query) || 
-                s.email.toLowerCase().includes(query) || 
-                s.grade.toLowerCase().includes(query)
+                s.email.toLowerCase().includes(query) ||
+                s.grade.toLowerCase().includes(query) ||
+                s.medium.toLowerCase().includes(query)
             );
         } else {
             filteredStudents = [...allStudents];
@@ -379,12 +382,19 @@
 
         pageItems.forEach(item => {
             const isActive = item.active === true || item.active === 'Yes';
+            // Keep an unrecognised sheet value visible so it can be spotted and corrected
+            const mediumOptions = (MEDIUMS.includes(item.medium) ? MEDIUMS : [item.medium, ...MEDIUMS])
+                .map(m => `<option value="${m}" ${m === item.medium ? 'selected' : ''}>${m}</option>`)
+                .join('');
             const row = document.createElement('tr');
             row.className = 'border-b border-surface-container hover:bg-surface-bright transition-colors relative z-0';
             row.innerHTML = `
                 <td class="px-8 py-5 transition-all">${item.name}</td>
                 <td class="px-4 py-5 text-on-surface-variant transition-all">${item.email}</td>
                 <td class="px-4 py-5 text-center transition-all"><span class="bg-secondary-container px-2 py-1 rounded-md text-[10px]">${item.grade}</span></td>
+                <td class="px-4 py-5 text-center transition-all">
+                    <select onchange="changeMedium('${item.email}', this.value)" class="bg-secondary-container border-none rounded-md text-[10px] py-1 pl-2 pr-7 focus:ring-2 focus:ring-primary/20">${mediumOptions}</select>
+                </td>
                 <td class="px-4 py-5 text-center font-bold text-primary transition-all">${item.nextWeek}</td>
                 <td class="px-4 py-5 text-on-surface-variant transition-all">${item.lastSent}</td>
                 <td class="px-4 py-5 text-center transition-all">
@@ -406,8 +416,9 @@
         const query = document.getElementById('student-search').value.toLowerCase();
         filteredStudents = allStudents.filter(s => 
             s.name.toLowerCase().includes(query) || 
-            s.email.toLowerCase().includes(query) || 
-            s.grade.toLowerCase().includes(query)
+            s.email.toLowerCase().includes(query) ||
+            s.grade.toLowerCase().includes(query) ||
+            s.medium.toLowerCase().includes(query)
         );
         currentPage = 1;
         renderTable();
@@ -509,6 +520,23 @@
                 loadData(); // Revert on failure
             })
             .updateStudentStatus(email, statusString);
+    }
+
+    /**
+     * Set the student's medium.
+     * @param {string} email
+     * @param {string} medium
+     */
+    function changeMedium(email, medium) {
+        google.script.run
+            .withSuccessHandler(function(res) {
+                loadData();
+            })
+            .withFailureHandler(function(err) {
+                alert("Error updating medium: " + err.message);
+                loadData(); // Revert on failure
+            })
+            .updateStudentMedium(email, medium);
     }
 
     /**
