@@ -146,6 +146,25 @@ Here is your week ${nextWeek} revision paper.
 }
 
 /**
+ * Check which paper each active student would get next, without sending anything.
+ * Run this from the Apps Script editor and read the execution log.
+ */
+function previewNextSend() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Students");
+  const mediumColumn = getMediumColumn(sheet);
+  const data = sheet.getDataRange().getValues();
+
+  for (let i = 1; i < data.length; i++) {
+    if (String(data[i][3]).trim().toLowerCase() !== "yes") continue;
+
+    const grade = String(data[i][2]).trim();
+    const paper = findPaper(grade, Number(data[i][4]), data[i][mediumColumn - 1]);
+
+    Logger.log(`${data[i][1]} (${grade}): ${paper.error || paper.fileName}`);
+  }
+}
+
+/**
  * Get dashboard data including summary stats, student list, and recent logs.
  */
 function getDashboardData() {
