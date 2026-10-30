@@ -231,6 +231,7 @@ function getDashboardData() {
 function addStudent(student) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet = ss.getSheetByName("Students");
+  const mediumColumn = getMediumColumn(sheet);
   sheet.appendRow([
     student.name,
     student.email,
@@ -239,6 +240,7 @@ function addStudent(student) {
     student.nextWeek,
     "" // last sent
   ]);
+  sheet.getRange(sheet.getLastRow(), mediumColumn).setValue(student.medium);
   return "Student added successfully!";
 }
 
@@ -253,6 +255,27 @@ function updateStudentStatus(email, status) {
   for (let i = 1; i < data.length; i++) {
     if (data[i][0] === email) {
       sheet.getRange(i + 1, 4).setValue(status); // Column D
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Update the medium of a student.
+ */
+function updateStudentMedium(email, medium) {
+  const config = getMediumConfig(medium);
+  if (!config) throw new Error("Invalid medium: " + medium);
+
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName("Students");
+  const mediumColumn = getMediumColumn(sheet);
+  const data = sheet.getRange("B:B").getValues(); // Check email column (B)
+
+  for (let i = 1; i < data.length; i++) {
+    if (data[i][0] === email) {
+      sheet.getRange(i + 1, mediumColumn).setValue(config.label);
       return true;
     }
   }
