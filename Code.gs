@@ -209,12 +209,14 @@ function getLogoDataUri() {
     throw new Error('LOGO_FILE_ID is not set in Script Properties.');
   }
 
+  const file = DriveApp.getFileById(fileId);
+
+  // Key includes the last update so a new logo shows without waiting for the cache
   const cache = CacheService.getScriptCache();
-  const cacheKey = 'dashboard_logo_data_uri';
+  const cacheKey = 'dashboard_logo_' + fileId + '_' + file.getLastUpdated().getTime();
   const cached = cache.get(cacheKey);
   if (cached) return cached;
 
-  const file = DriveApp.getFileById(fileId);
   const blob = file.getBlob();
   const mimeType = blob.getContentType();
   const base64 = Utilities.base64Encode(blob.getBytes());
