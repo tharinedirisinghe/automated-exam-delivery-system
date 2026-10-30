@@ -232,6 +232,13 @@
 <input id="nextPaper" name="nextPaper" class="w-full bg-surface-container-low border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary/20" placeholder="01" type="number" required/>
 </div>
 </div>
+<div class="space-y-2">
+<label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest" style="">Medium</label>
+<select id="medium" name="medium" class="w-full bg-surface-container-low border-none rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary/20">
+<option value="English">English</option>
+<option value="Sinhala">Sinhala</option>
+</select>
+</div>
 <button class="w-full paper-gradient text-white py-4 rounded-xl font-bold text-sm shadow-md mt-4 hover:shadow-lg transition-all active:scale-[0.98]" style="" type="submit">
                             Add Student to System
                         </button>
@@ -567,6 +574,7 @@
             name: form.fullName.value,
             email: form.schoolEmail.value,
             grade: form.grade.value,
+            medium: form.medium.value,
             nextWeek: form.nextPaper.value
         };
 
