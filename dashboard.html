@@ -455,22 +455,10 @@
   const logoEl = document.getElementById('header-logo');
   if (!logoEl) return;
 
-  // Optional tiny fallback placeholder
-  const fallback =
-    'data:image/svg+xml;utf8,' +
-    encodeURIComponent(
-      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">' +
-      '<rect width="120" height="120" rx="16" fill="#f1f4fa"/>' +
-      '<text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" font-family="Arial" font-size="16" fill="#835400">Atelier</text>' +
-      '</svg>'
-    );
-
+  // If the logo can't be loaded, the img alt text shows instead
   google.script.run
     .withSuccessHandler(function (dataUri) {
-      logoEl.src = dataUri || fallback;
-    })
-    .withFailureHandler(function () {
-      logoEl.src = fallback;
+      logoEl.src = dataUri;
     })
     .getLogoDataUri();
 }
